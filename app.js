@@ -4,8 +4,10 @@ const app = express();
 const Logger = require("./logger/logger");
 const logger = Logger.getLogger("./app");
 const connect = require("./utils/db");
-const notFount = require("./utils/middleware/not-found");
+const notFound = require("./utils/middleware/not-found");
+const errorHandlerMiddleware = require('./utils/middleware/error-handler')
 const morgan = require("morgan");
+const products = require('./routes/products')
 
 const PORT = process.env.PORT || 3000;
 app.use(express.json({ extend: false }));
@@ -39,10 +41,16 @@ switch (process.env.ENVIRONMENT) {
         );
     }
 }app.get("/", (req, res) => {
-  res.status(200).json({ msg: "hello world" });
+//   res.status(200).json({ msg: "hello world" });
+res.send('<h1>Store API</h1> <a href="/api/v1/products">product route</a>')
 });
 
-app.use(notFount);
+// for product routes
+
+app.use('/api/v1/products',products)
+
+app.use(notFound);
+app.use(errorHandlerMiddleware)
 
 const start = async () => {
   try {
